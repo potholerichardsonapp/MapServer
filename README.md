@@ -46,9 +46,9 @@ Navigate to the directory that has the manage.py file
 ```sh
 $ python3 manage.py runserver
 ```
-You should now be able to access the server at http://127.0.0.1:8080
+You should now be able to access the server at http://127.0.0.1:8000
 
-The admin panel is located at http://127.0.0.1:8080/admin
+The admin panel is located at http://127.0.0.1:8000/admin
 Check the slack for credentials
 
 ## Further reading

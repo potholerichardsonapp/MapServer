@@ -1,46 +1,87 @@
-
-
 <!DOCTYPE html>
+
 <html>
-  <head>
-    <style>
-       #map {
-        height: 400px;
-        width: 100%;
-       }
-    </style>
-  </head>
-  <body>
-    <h3>My Google Maps Demo</h3>
-    <div id="map"></div>
-    <script>
-      function initMap() {
-        var uluru = {lat: -25.363, lng: 131.044};
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
-          center: uluru
-        });
+
+<head>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>My Google Maps Demo</h3>
+  <div id="map"></div>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?language=fra&amp;sensor=false"></script>
+  <script type="text/javascript">
+    var map;
+    var Markers = {};
+    var infowindow;
+    var locations = [
+      [32.9480, -96.7299, ],
+      [32.9483, -96.7290, ],
+      [32.9485, -96.7295, ]
+    ];
+    var origin = new google.maps.LatLng(locations[0][0], locations[0][1]);
+
+    function initialize() {
+      var mapOptions = {
+        zoom: 17,
+        center: origin
+      };
+
+      map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+      infowindow = new google.maps.InfoWindow();
+
+      var latlng = []
+
+      for (i = 0; i < locations.length; i++) {
+        var position = new google.maps.LatLng(locations[i][0], locations[i][1]);
+        latlng[i] = position;
         var marker = new google.maps.Marker({
-          position: uluru,
-          map: map
+          position: position,
+          map: map,
         });
+        google.maps.event.addListener(marker, 'click', (function (marker, i) {
+          return function () {
+            infowindow.setContent('<strong>' + 'LOCATION: ' + Number(Math.round(locations[i][0] + 'e2') + 'e-2')
+              .toString() +
+              ', ' + Number(Math.round(locations[i][1] + 'e2') + 'e-2').toString() + '</strong>');
+            infowindow.open(map, marker);
+          }
+        })(marker, i));
       }
-    </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiVKFDzfgvCsKG8SRXR2_AEqoc9ode03s&callback=initMap"
-  type="text/javascript"></script>
 
+      var latlngbounds = new google.maps.LatLngBounds();
+      for (var i = 0; i < latlng.length; i++) {
+        latlngbounds.extend(latlng[i]);
+      }
+      map.fitBounds(latlngbounds);
+
+      locate(0);
+
+    }
+
+    function locate(marker_id) {
+      var myMarker = Markers[marker_id];
+      var markerPosition = myMarker.getPosition();
+      map.setCenter(markerPosition);
+      google.maps.event.trigger(myMarker, 'click');
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+  </script>
   <form action="" method="post">
-    {% csrf_token %}
-    {{ form }}
+    {% csrf_token %} {{ form }}
     <input type="submit" value="Submit" />
-</form>
-  </body>
-
+  </form>
+</body>
+<!-- 
   <script type="text/javascript">
       var data = {{data | safe}};
-  </script>
+  </script> -->
+
 </html>
-
-
-
-

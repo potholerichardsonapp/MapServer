@@ -4,42 +4,81 @@
 
 <head>
   <style>
-    #map {
-      height: 400px;
-      width: 100%;
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #map,
+    #pano {
+      float: left;
+      height: 100%;
+      width: 33%;
+    }
+
+    #floating-panel {
+      position: absolute;
+      top: 10px;
+      left: 25%;
+      z-index: 5;
+      background-color: #fff;
+      padding: 5px;
+      border: 1px solid #999;
+      text-align: center;
+      font-family: 'Roboto', 'sans-serif';
+      line-height: 30px;
+      padding-left: 10px;
+    }
+
+    #floating-panel {
+      background-color: #fff;
+      border: 1px solid #999;
+      left: 25%;
+      padding: 5px;
+      position: absolute;
+      top: 10px;
+      z-index: 5;
     }
   </style>
 </head>
 
 <body>
-  <h3>My Google Maps Demo</h3>
+  <div id="floating-panel">
+    <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+    <button onclick="changeRadius()">Change radius</button>
+    <button onclick="changeOpacity()">Change opacity</button>
+  </div>
   <div id="map"></div>
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?language=fra&amp;sensor=false"></script>
+  <div id="pano"></div>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=visualization&language=fra&amp;sensor=false"></script>
   <script type="text/javascript">
     var map;
     var Markers = {};
     var infowindow;
-    var locations = [
-      [32.9480, -96.7299, ],
-      [32.9483, -96.7290, ],
-      [32.9485, -96.7295, ]
-    ];
-    var origin = new google.maps.LatLng(locations[0][0], locations[0][1]);
+    var origin = new google.maps.LatLng(0, 0);
+    var heatmap;
 
     function initialize() {
       var mapOptions = {
         zoom: 17,
         center: origin
       };
-
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
       infowindow = new google.maps.InfoWindow();
+
+      var sv = new google.maps.StreetViewService();
+      panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
+
+      var nodes = data.map(function (object) {
+        return [object["lat"], object["long"], object["accel"], object["generator"], object["date_time"]]
+      });
 
       var latlng = []
 
-      for (i = 0; i < locations.length; i++) {
-        var position = new google.maps.LatLng(locations[i][0], locations[i][1]);
+      for (i = 0; i < nodes.length; i++) {
+        var position = new google.maps.LatLng(nodes[i][0], nodes[i][1]);
         latlng[i] = position;
         var marker = new google.maps.Marker({
           position: position,
@@ -47,41 +86,92 @@
         });
         google.maps.event.addListener(marker, 'click', (function (marker, i) {
           return function () {
-            infowindow.setContent('<strong>' + 'LOCATION: ' + Number(Math.round(locations[i][0] + 'e2') + 'e-2')
-              .toString() +
-              ', ' + Number(Math.round(locations[i][1] + 'e2') + 'e-2').toString() + '</strong>');
+            infowindow.setContent('<h3><strong>' + nodes[i][4] + '</strong></h3>' +
+              '<p>' + 'lat: ' + nodes[i][0] + ', long: ' + nodes[i][1] + '</p>' +
+              '<p>' + 'accel: ' + nodes[i][2] + '</p>' +
+              '<p>' + 'generator: ' + nodes[i][3] + '</p>'
+            );
             infowindow.open(map, marker);
+
+            sv.getPanorama({
+              location: {
+                lat: Number(nodes[i][0]),
+                lng: Number(nodes[i][1])
+              },
+              radius: 50
+            }, processSVData);
           }
         })(marker, i));
       }
-
       var latlngbounds = new google.maps.LatLngBounds();
       for (var i = 0; i < latlng.length; i++) {
         latlngbounds.extend(latlng[i]);
       }
       map.fitBounds(latlngbounds);
 
-      locate(0);
-
+      heatmap = new google.maps.visualization.HeatmapLayer({
+        data:  nodes.map(function(object){return new google.maps.LatLng(object[0], object[1])}),
+        map: map
+      });
     }
-
-    function locate(marker_id) {
-      var myMarker = Markers[marker_id];
-      var markerPosition = myMarker.getPosition();
-      map.setCenter(markerPosition);
-      google.maps.event.trigger(myMarker, 'click');
-    }
-
     google.maps.event.addDomListener(window, 'load', initialize);
+
+    function processSVData(data, status) {
+      if (status === 'OK') {
+
+        panorama.setPano(data.location.pano);
+        panorama.setPov({
+          heading: 270,
+          pitch: 0
+        });
+
+        panorama.setVisible(true);
+
+      } else {
+        console.error('Street View data not found for this location.');
+      }
+    }
+
+    function toggleHeatmap() {
+      heatmap.setMap(heatmap.getMap() ? null : map);
+    }
+
+    function changeRadius() {
+      heatmap.set('radius', heatmap.get('radius') ? null : 20);
+    }
+
+    function changeOpacity() {
+      heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+    }
   </script>
   <form action="" method="post">
     {% csrf_token %} {{ form }}
     <input type="submit" value="Submit" />
   </form>
 </body>
-<!-- 
-  <script type="text/javascript">
-      var data = {{data | safe}};
-  </script> -->
+<script type="text/javascript">
+  var data = [{
+      "lat": "32.9480",
+      "long": "-96.7299",
+      "accel": "54322.000000",
+      "generator": 1,
+      "date_time": "2015-03-01T08:23:15+00:00"
+    },
+    {
+      "lat": "32.9483",
+      "long": "-96.7290",
+      "accel": "41345.000000",
+      "generator": 1,
+      "date_time": "2012-03-01T08:12:15+00:00"
+    },
+    {
+      "lat": "32.9485",
+      "long": "-96.7295",
+      "accel": "2425.000000",
+      "generator": 1,
+      "date_time": "2011-03-01T08:4:15+00:00"
+    }
+  ];
+</script>
 
 </html>

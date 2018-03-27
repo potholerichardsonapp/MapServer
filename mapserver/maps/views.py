@@ -18,9 +18,12 @@ def search_form(request):
 
             #Get the search params from the valid form
             z_axis = form.cleaned_data['threshold']
+            user_id = form.cleaned_data['userId']
+            event_id = form.cleaned_data['userId']
 
             #Package the data that matches the search params
-            results = DataReport.objects.filter(z_axis__gte=z_axis)
+            results = DataReport.objects.filter(z_axis__get=z_axis)
+
 
             json_data = []
 

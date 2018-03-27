@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
     }
-
+    
     #map,
     #pano {
       float: left;
@@ -41,14 +41,31 @@
       top: 10px;
       z-index: 5;
     }
+
+    #test{
+        color: #424242;
+        font-family: "Adobe Caslon Pro", "Hoefler Text", Georgia, Garamond, Times, serif;
+        letter-spacing:0.1em;
+        text-align:center;
+        margin: 40px auto;
+        text-transform: lowercase;
+        line-height: 145%;
+        font-size: 14pt;
+        font-variant: small-caps;
+    }
   </style>
 </head>
+
 
 <body>
   <div id="floating-panel">
     <button onclick="toggleHeatmap()">Toggle Heatmap</button>
     <button onclick="changeRadius()">Change radius</button>
     <button onclick="changeOpacity()">Change opacity</button>
+    <form action="" method="post">
+        {% csrf_token %} {{ form }}
+        <input type="submit" value="Submit" />
+      </form>
   </div>
   <div id="map"></div>
   <div id="pano"></div>
@@ -144,36 +161,62 @@
       heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
     }
   </script>
-  <form action="" method="post">
-    <table>
-      {% csrf_token %} {{ form }}
-    </table>
-    <input type="submit" value="Submit" />
-  </form>
+
+  <script>
+    //Make the DIV element draggagle:
+dragElement(document.getElementById(("floating-panel")));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+  </script>
+>>>>>>> master
 </body>
-<script type="text/javascript">
-  var data = [{
-      "lat": "32.9480",
-      "long": "-96.7299",
-      "accel": "54322.000000",
-      "generator": 1,
-      "date_time": "2015-03-01T08:23:15+00:00"
-    },
-    {
-      "lat": "32.9483",
-      "long": "-96.7290",
-      "accel": "41345.000000",
-      "generator": 1,
-      "date_time": "2012-03-01T08:12:15+00:00"
-    },
-    {
-      "lat": "32.9485",
-      "long": "-96.7295",
-      "accel": "2425.000000",
-      "generator": 1,
-      "date_time": "2011-03-01T08:4:15+00:00"
-    }
-  ];
-</script>
+
+<body id="test">
+  <h1>GPS Log</h1>
+  <h3>Instructions: </h3>
+  <h4>Enter a threshold number to see what data points meet the value</h3>
+  <h4>Click a marker to enable streetview</h3>
+  <script type="text/javascript">
+    var data = {{data | safe}};
+  </script>
+</body>
+
 
 </html>

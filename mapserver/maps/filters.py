@@ -11,4 +11,4 @@ class SearchFilter(django_filters.FilterSet):
 
     class Meta:
         model = DataReport
-        fields = ['date', 'time', 'z-axis', 'user_id', 'event_id', ]
+        fields = ['lat', 'long', 'accel', 'generator', 'date_time', 'event_type', ]

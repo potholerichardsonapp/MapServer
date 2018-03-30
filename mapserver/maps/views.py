@@ -35,13 +35,13 @@ def search_form(request):
             #Serialize the data to be returned
             for result in results:
                 json_obj = dict(
+                    lat=str(result.lat),
+                    long=str(result.long),
+                    accel=str(result.z_axis),
                     generator=result.generator.pk,
-                    lat = str(result.lat),
-                    long = str(result.long),
-                    accel = str(result.z_axis),
                     date_time = result.date_time,
-                    event_type = result.event_type,
-                    event_id = result.event_id
+                    # event_type = result.event_type,
+                    # event_id = result.event_id
                 )
                 json_data.append(json_obj)
 

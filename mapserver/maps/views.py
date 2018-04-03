@@ -18,26 +18,46 @@ def search_form(request):
 
             #Get the search params from the valid form
             z_axis = form.cleaned_data['threshold']
+            date_time = form.cleaned_data['date_time']
+            # user_id = form.cleaned_data['user_id']
+            # event_id = form.cleaned_data['event_id']
 
             #Package the data that matches the search params
-            results = DataReport.objects.filter(z_axis__gte=z_axis)
+            # results = DataReport.objects \
+            #     .filter(z_axis__gte=z_axis) \
+                # .filter(date_time__gte=date_time) \
+                # .filter(generator_gte=user_id) \
+                # .filter(event_id__gte=event_id)
+
+
+            filters = {}
+
+            if z_axis:
+                filters['z_axis__gte'] = z_axis
+            if date_time:
+                filters['date_time__gte'] = date_time
+            results = DataReport.objects.filter(**filters)
+
 
             json_data = []
 
             #Serialize the data to be returned
-            for result in results:
-                json_obj = dict(
-                    lat = str(result.lat),
-                    long = str(result.long),
-                    accel = str(result.z_axis),
-                    generator = result.generator.pk,
-                    date_time = result.date_time,
+            if results:
+                for result in results:
+                    json_obj = dict(
+                        lat=str(result.lat),
+                        long=str(result.long),
+                        accel=str(result.z_axis),
+                        generator=result.generator.pk,
+                        date_time = result.date_time,
+                        # event_type = result.event_type,
+                        # event_id = result.event_id
+                    )
+                    json_data.append(json_obj)
 
-                )
-                json_data.append(json_obj)
-
-                data = json.dumps(json_data, default=date_handler)
-
+                    data = json.dumps(json_data, default=date_handler)
+            else:
+                data = {}
             # Return data
             return render(request, 'maps/search.html', {'form': form, 'data': data})
 

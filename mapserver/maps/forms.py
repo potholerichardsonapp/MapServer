@@ -6,7 +6,7 @@ class SearchForm(forms.Form):
     #end_date = forms.DateTimeField(label='End Date/Time')
 
     threshold = forms.DecimalField(label='z-axis thresholds', required=False)
-    date_time = forms.DateTimeField(label='Date', help_text = '(MM/DD/YYYY)', required=False)
+    date_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))
 
 
 

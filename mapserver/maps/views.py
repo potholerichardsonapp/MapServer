@@ -17,17 +17,26 @@ def search_form(request):
         if form.is_valid():
 
             #Get the search params from the valid form
-            date_time = form.cleaned_data['date_time']
             z_axis = form.cleaned_data['threshold']
-            user_id = form.cleaned_data['user_id']
-            event_id = form.cleaned_data['event_id']
+            # date_time = form.cleaned_data['date_time']
+            # user_id = form.cleaned_data['user_id']
+            # event_id = form.cleaned_data['event_id']
 
             #Package the data that matches the search params
-            results = DataReport.objects \
-                .filter(generator_gte=user_id) \
-                .filter(z_axis__gte=z_axis) \
-                .filter(date_time__gte=date_time) \
-                .filter(event_id__gte=event_id)
+            # results = DataReport.objects \
+            #     .filter(generator_gte=user_id) \
+            #     .filter(z_axis__gte=z_axis) \
+            #     .filter(date_time__gte=date_time) \
+            #     .filter(event_id__gte=event_id)
+
+
+            filters = {}
+
+            if z_axis:
+                filters['z_axis__gte'] = z_axis
+            # if date_time:
+            #     filters['date_time'] = date_time
+            results = DataReport.objects.filter(**filters)
 
 
             json_data = []

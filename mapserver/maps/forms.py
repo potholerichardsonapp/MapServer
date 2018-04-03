@@ -5,12 +5,13 @@ class SearchForm(forms.Form):
    # start_date = forms.DateTimeField(label='Start Date/Time')
     #end_date = forms.DateTimeField(label='End Date/Time')
 
-    date_time = forms.DateTimeField(label='Date_Time', required=False)
     threshold = forms.DecimalField(label='z-axis thresholds', required=False)
+    # date_time = forms.DateTimeField(label='Date_Time', required=False)
 
 
-    CHOICES = (('1', 'Critical',), ('2', 'Warninig',), ('3', 'Watching'))
-    event_type = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
+
+    # CHOICES = (('1', 'Critical',), ('2', 'Warninig',), ('3', 'Watching'))
+    # event_type = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
     # user_id = forms.DecimalField(label='user Id', required=False)
     # event_id = forms.DecimalField(label='event Id', required=False)
 

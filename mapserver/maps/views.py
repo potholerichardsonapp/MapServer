@@ -1,3 +1,5 @@
+from xmlrpc.client import DateTime
+
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from .forms import SearchForm
@@ -85,11 +87,22 @@ def date_handler(obj):
 
 
 def update_DB():
-    text = """<h1>welcome to Map Server Home !</h1>"""
+
     # initialize the pyrebase library
     firebase = pyrebase.initialize_app(config)
+
     # create a database instance
     db = firebase.database()
+
+    #Get timestamp of latest event and current time
+    latest = DataReport.objects.latest('date_time').date_time
+    now = datetime.now()
+
+    #Fetch events after this time
+    new_events = db.child("users").order_by_child("date_time").start_at(latest).end_at(now).get()
+
+
+
     # get posts from database
     posts = db.child("posts").get()
     # convert post to dictionary

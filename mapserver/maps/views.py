@@ -9,6 +9,8 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 import pyrebase
 from dateutil import parser
+from datetime import datetime, timezone
+import pytz
 
 
 config = {
@@ -76,6 +78,7 @@ def search_form(request):
     else:
         form = SearchForm()
         results = ''
+        update_DB()
 
     return render(request, 'maps/search.html', {'form': form})
 
@@ -95,35 +98,29 @@ def update_DB():
     db = firebase.database()
 
     #Get timestamp of latest event and current time
-    latest = DataReport.objects.latest('date_time').date_time
-    now = datetime.now()
+    latest = DataReport.objects.latest('date_time').date_time.timestamp()
+    now = datetime.now().timestamp()
 
     #Fetch events after this time
-    new_events = db.child("users").order_by_child("date_time").start_at(latest).end_at(now).get()
+    posts = db.child("posts").order_by_child("date_time").start_at(latest).end_at(now).get()
 
+    #if not empty, parse date and input into DB
+    if posts.pyres:
+        posts = dict(posts.val())
 
+        # match firebase data with local server fields
+        for post in posts:
+            lat = posts[post]['lat']
+            long = posts[post]['long']
+            z_axis = posts[post]['z_axis']
+            date_time = posts[post]['date_time']
 
-    # get posts from database
-    posts = db.child("posts").get()
-    # convert post to dictionary
-    posts = dict(posts.val())
-    print(posts)
-    # empty the local server table (Data Report table)
-    DataReport.objects.all().delete()
+            #Convert date_time parse into iso compliant string
+            date_time = datetime.utcfromtimestamp(date_time).isoformat()
 
-    # match firebase data with local server fields
-    for post in posts:
-        generator = post
-        lat = posts[post]['lat']
-        long = posts[post]['long']
-        z_axis = posts[post]['z_axis']
-        event_type = posts[post]['event_type']
-        date_time = parser.parse(posts[post]['date_time'])
-        print(date_time)
+            # load data report instance with data fields
+            datareport = DataReport(
+                lat=lat, long=long, z_axis=z_axis,  date_time=date_time)
 
-        # load data report instance with data fields
-        datareport = DataReport(
-            generator=generator, lat=lat, long=long, z_axis=z_axis, event_type=event_type, date_time=date_time)
-
-        # save the datareport instance
-        datareport.save()
+            # save the datareport instance
+            datareport.save()

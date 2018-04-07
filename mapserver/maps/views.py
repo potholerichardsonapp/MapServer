@@ -61,7 +61,7 @@ def search_form(request):
                         lat=str(result.lat),
                         long=str(result.long),
                         accel=str(result.z_axis),
-                        generator=result.generator.pk,
+                        generator="",
                         date_time = result.date_time,
                         # event_type = result.event_type,
                         # event_id = result.event_id

@@ -8,7 +8,6 @@ from django.core import serializers
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 import pyrebase
-from dateutil import parser
 from datetime import datetime, timezone
 import pytz
 

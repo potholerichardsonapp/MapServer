@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    #map,
+    #pano {
+      float: left;
+      height: 100%;
+      width: 33%;
+    }
+
+    #floating-panel {
+      position: absolute;
+      top: 10px;
+      left: 25%;
+      z-index: 5;
+      background-color: #fff;
+      padding: 5px;
+      border: 1px solid #999;
+      text-align: center;
+      font-family: 'Roboto', 'sans-serif';
+      line-height: 30px;
+      padding-left: 10px;
+    }
+
+    #floating-panel {
+      background-color: #fff;
+      border: 1px solid #999;
+      left: 25%;
+      padding: 5px;
+      position: absolute;
+      top: 10px;
+      z-index: 5;
+    }
+
+    #test{
+        color: #424242;
+        font-family: "Adobe Caslon Pro", "Hoefler Text", Georgia, Garamond, Times, serif;
+        letter-spacing:0.1em;
+        text-align:center;
+        margin: 40px auto;
+        text-transform: lowercase;
+        line-height: 145%;
+        font-size: 14pt;
+        font-variant: small-caps;
+    }
+  </style>
+</head>
+
+
+<body>
+  <div id="floating-panel">
+    <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+    <button onclick="changeRadius()">Change radius</button>
+    <button onclick="changeOpacity()">Change opacity</button>
+    <form action="" method="post">
+      <table>
+        {% csrf_token %} {{ form }}
+      </table>
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+  <div id="map"></div>
+  <div id="pano"></div>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7oxRj7Fqp3hdiwVzAhJuKheZ0krysFZM&libraries=visualization&language=fra&amp;sensor=false"></script>
+  <script type="text/javascript">
+    var map;
+    var Markers = {};
+    var infowindow;
+    var origin = new google.maps.LatLng(0, 0);
+    var heatmap;
+
+    function initialize() {
+      var mapOptions = {
+        zoom: 17,
+        center: origin
+      };
+      map = new google.maps.Map(document.getElementById('map'), mapOptions);
+      infowindow = new google.maps.InfoWindow();
+
+      var sv = new google.maps.StreetViewService();
+      panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
+
+      var nodes = data.map(function (object) {
+        return [object["lat"], object["long"], object["accel"], object["generator"], object["date_time"]]
+      });
+
+      var latlng = []
+
+      for (i = 0; i < nodes.length; i++) {
+        var position = new google.maps.LatLng(nodes[i][0], nodes[i][1]);
+        latlng[i] = position;
+        var marker = new google.maps.Marker({
+          position: position,
+          map: map,
+        });
+        google.maps.event.addListener(marker, 'click', (function (marker, i) {
+          return function () {
+            infowindow.setContent('<h3><strong>' + nodes[i][4] + '</strong></h3>' +
+              '<p>' + 'lat: ' + nodes[i][0] + ', long: ' + nodes[i][1] + '</p>' +
+              '<p>' + 'accel: ' + nodes[i][2] + '</p>' +
+              '<p>' + 'generator: ' + nodes[i][3] + '</p>'
+            );
+            infowindow.open(map, marker);
+
+            sv.getPanorama({
+              location: {
+                lat: Number(nodes[i][0]),
+                lng: Number(nodes[i][1])
+              },
+              radius: 50
+            }, processSVData);
+          }
+        })(marker, i));
+      }
+      var latlngbounds = new google.maps.LatLngBounds();
+      for (var i = 0; i < latlng.length; i++) {
+        latlngbounds.extend(latlng[i]);
+      }
+      map.fitBounds(latlngbounds);
+
+      heatmap = new google.maps.visualization.HeatmapLayer({
+        data:  nodes.map(function(object){return new google.maps.LatLng(object[0], object[1])}),
+        map: map
+      });
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+    function processSVData(data, status) {
+      if (status === 'OK') {
+
+        panorama.setPano(data.location.pano);
+        panorama.setPov({
+          heading: 270,
+          pitch: 0
+        });
+
+        panorama.setVisible(true);
+
+      } else {
+        console.error('Street View data not found for this location.');
+      }
+    }
+
+    function toggleHeatmap() {
+      heatmap.setMap(heatmap.getMap() ? null : map);
+    }
+
+    function changeRadius() {
+      heatmap.set('radius', heatmap.get('radius') ? null : 20);
+    }
+
+    function changeOpacity() {
+      heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+    }
+  </script>
+
+  <script>
+    //Make the DIV element draggagle:
+dragElement(document.getElementById(("floating-panel")));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+  </script>
+</body>
+
+<body id="test">
+  <h1>GPS Log</h1>
+  <h3>Instructions: </h3>
+  <h4>Enter a threshold number to see what data points meet the value</h3>
+  <h4>Click a marker to enable streetview</h3>
+  <script type="text/javascript">
+    var data = {{data | safe}};
+  </script>
+</body>
+
+
+</html>

@@ -97,7 +97,12 @@ def update_DB():
     db = firebase.database()
 
     #Get timestamp of latest event and current time
-    latest = DataReport.objects.latest('date_time').date_time.timestamp()
+    try:
+        latest = DataReport.objects.latest('date_time').date_time.timestamp()
+    except DataReport.DoesNotExist:
+        latest = 0
+
+
     now = datetime.now().timestamp()
 
     #Fetch events after this time
@@ -111,7 +116,7 @@ def update_DB():
         for post in posts:
             lat = posts[post]['lat']
             long = posts[post]['long']
-            z_axis = posts[post]['z_axis']
+            z_axis = posts[post]['accelerometerZ']
             date_time = posts[post]['date_time']
 
             #Convert date_time parse into iso compliant string
@@ -122,4 +127,6 @@ def update_DB():
                 lat=lat, long=long, z_axis=z_axis,  date_time=date_time)
 
             # save the datareport instance
-            datareport.save()
+
+            if lat != 0 and long != 0:
+                datareport.save()

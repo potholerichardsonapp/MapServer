@@ -31,6 +31,8 @@ def search_form(request):
             #Get the search params from the valid form
             z_axis = form.cleaned_data['threshold']
             date_time = form.cleaned_data['date_time']
+            user = form.cleaned_data['users']
+
             # user_id = form.cleaned_data['user_id']
             # event_id = form.cleaned_data['event_id']
 
@@ -48,6 +50,9 @@ def search_form(request):
                 filters['z_axis__gte'] = z_axis
             if date_time:
                 filters['date_time__gte'] = date_time
+            if user != "All":
+                filters['generator'] =  user
+
             results = DataReport.objects.filter(**filters)
 
 

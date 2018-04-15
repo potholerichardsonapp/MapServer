@@ -60,7 +60,7 @@ def search_form(request):
                         lat=str(result.lat),
                         long=str(result.long),
                         accel=str(result.z_axis),
-                        generator="",
+                        generator = result.generator,
                         date_time = result.date_time,
                         # event_type = result.event_type,
                         # event_id = result.event_id
@@ -118,13 +118,14 @@ def update_DB():
             long = posts[post]['long']
             z_axis = posts[post]['accelerometerZ']
             date_time = posts[post]['date_time']
+            gen_field = posts[post]['id']
 
             #Convert date_time parse into iso compliant string
             date_time = datetime.utcfromtimestamp(date_time).isoformat()
 
             # load data report instance with data fields
             datareport = DataReport(
-                lat=lat, long=long, z_axis=z_axis,  date_time=date_time)
+                lat=lat, long=long, z_axis=z_axis,  date_time=date_time, generator=gen_field)
 
             # save the datareport instance
 

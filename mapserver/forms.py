@@ -27,3 +27,16 @@ class SearchForm(forms.Form):
     ## make this field 'readonly'. toggle touch to designate coordinate? .... SIMPLY CREATE A BUTTON TO SEARCH AREA SHOWN ON SCREEN
     # latitude = forms.DecimalField(label='latitude')
     # longitude = forms.DecimalField(label='longitutde')
+
+
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        choices = []
+        user_choices = DataReport.objects.values('generator').distinct()
+
+        choices.append(("All", "All"))
+        for x in user_choices:
+            choices.append((x['generator'], x['generator']))
+
+        self.fields['users'] = forms.ChoiceField(
+            choices=choices)

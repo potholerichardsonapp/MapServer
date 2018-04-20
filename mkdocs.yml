@@ -1,0 +1,8 @@
+site_name: MapServer Docs
+pages:
+    - Home: index.md
+    - Getting Started: gettingstarted.md
+    - Project Layout: ProjectLayout.md
+    - How it works: serveroperation.md
+    - Deploying the server: deployment.md
+theme: readthedocs

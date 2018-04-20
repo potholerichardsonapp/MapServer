@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>How it works - MapServer Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "How it works";
+    var mkdocs_page_input_path = "serveroperation.md";
+    var mkdocs_page_url = "/serveroperation/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> MapServer Docs</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../gettingstarted/">Getting Started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../ProjectLayout/">Project Layout</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">How it works</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#the-lifecycle-of-a-user">The lifecycle of a user</a></li>
+    
+
+    <li class="toctree-l2"><a href="#initial-navigation">Initial navigation</a></li>
+    
+
+    <li class="toctree-l2"><a href="#the-matching-view">The matching view</a></li>
+    
+
+    <li class="toctree-l2"><a href="#the-form">The form</a></li>
+    
+
+    <li class="toctree-l2"><a href="#the-template">The template</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../deployment/">Deploying the server</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">MapServer Docs</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>How it works</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="the-lifecycle-of-a-user">The lifecycle of a user</h1>
+<h1 id="initial-navigation">Initial navigation</h1>
+<p>When a user navigates to your website, the Django webserver will first look at it's mapserverproj/urls.py to see if the page the user is attempting to reach has a corresponding view to render.</p>
+<p>In our project, any non /admin pages will redirect it's search to the mapserver/urls.py.</p>
+<pre><code>mapserver/urls.py
+
+urlpatterns = [
+path('', views.search_form, name='search_form'),
+]
+</code></pre>
+<p>Here, for a blank match. The server will call the search_form view located in mapserver/views.py</p>
+<h1 id="the-matching-view">The matching view</h1>
+<p>In views.py, search_form is where most of the logic for the server currently exists. When search_form is called, the browser <em>request</em> is passed to the view containing it's type (GET, POST, etc.) and any associated data.</p>
+<p>The search_form itself reacts depending on the request being passed in.</p>
+<p>If the request is a GET (indicating that the user is visiting this page without submitting the search form):</p>
+<pre><code>Get the search form from forms.py
+Set the returning data object to empty
+Sync the firebase database (Note, if the unsynced data is large, it may appear the page has stalled while this loads)
+render the search.html template, passing our data object
+</code></pre>
+<p>If the request is a POST (indicating a form submission):</p>
+<pre><code>Collect the submitted form data from the users request
+Check to see that the form validation was successful
+Parse the form data
+Perform a query on our local database
+Parse the returned results to our data object
+render the search.html template, passing our data object
+</code></pre>
+<p>You can check the code to see the specifics of how these are performed.</p>
+<h1 id="the-form">The form</h1>
+<p>You probably noticed during the view logic that we rendered a searh form. </p>
+<p>This can be found in the forms.py file.</p>
+<pre><code>class SearchForm(forms.Form):
+
+    choices = []
+    user_choices = DataReport.objects.values('generator').distinct()
+
+    choices.append(("All", "All"))
+    for x in user_choices:
+        choices.append( (x['generator'],x['generator']) )
+
+    threshold = forms.DecimalField(label='z-axis thresholds', required=False)
+    date_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))
+    users = forms.CharField(label='User', widget=forms.Select(choices=choices), required=False)
+
+    #This initializer is required to update users field on each form load, not just when server is started
+    #If you have a dynamic field, be sure to add logic here.
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        choices = []
+        user_choices = DataReport.objects.values('generator').distinct()
+
+        choices.append(("All", "All"))
+        for x in user_choices:
+            choices.append((x['generator'], x['generator']))
+
+        self.fields['users'] = forms.ChoiceField(
+            choices=choices)
+</code></pre>
+<p>The form class defines what fields you want to display on the form, their validators (if any), and any other logic that needs to be performed.</p>
+<p>In it's current state, we have three fields which are used to query our data, but more can be added:</p>
+<pre><code>threshold = forms.DecimalField(label='z-axis thresholds', required=False)
+date_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))
+users = forms.CharField(label='User', widget=forms.Select(choices=choices), required=False)
+</code></pre>
+<p>The users field loads all the distinct "generators" from the database and displays them. For dynamic fields like these, by default they're only loaded once when the server loads. We have overridden this behavior in the initializer for the form object.</p>
+<p>If you add more dynamic fields, you must do the same if you want it to load everytime the form is called.</p>
+<h1 id="the-template">The template</h1>
+<p>When you render a page from the view, you are calling a template from the mapserver/templates folder, and usually passing some data into it like the form objects to render and any data object that needs to be exposed to the front end logic.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../deployment/" class="btn btn-neutral float-right" title="Deploying the server">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../ProjectLayout/" class="btn btn-neutral" title="Project Layout"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../ProjectLayout/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../deployment/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

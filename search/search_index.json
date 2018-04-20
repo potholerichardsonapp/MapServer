@@ -1,0 +1,134 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Welcome to MapServer\n\n\nOverview\n\n\nIf you're reading this documentation, you're likely working on the webserver portion of the pothole detection app.\n\n\nThe MapServer is a Django webserver that synchronizes with the Firebase DB that stores your recorded events and overlays the information on a google maps frontend.\n\n\nIn this documentation, we'll discuss setting up your development environment, the project layout, and how to make some simple changes to the project.\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.",
+            "title": "Home"
+        },
+        {
+            "location": "/#welcome-to-mapserver",
+            "text": "",
+            "title": "Welcome to MapServer"
+        },
+        {
+            "location": "/#overview",
+            "text": "If you're reading this documentation, you're likely working on the webserver portion of the pothole detection app.  The MapServer is a Django webserver that synchronizes with the Firebase DB that stores your recorded events and overlays the information on a google maps frontend.  In this documentation, we'll discuss setting up your development environment, the project layout, and how to make some simple changes to the project.",
+            "title": "Overview"
+        },
+        {
+            "location": "/#project-layout",
+            "text": "mkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.",
+            "title": "Project layout"
+        },
+        {
+            "location": "/gettingstarted/",
+            "text": "Getting Started\n\n\nOn this page, we'll talk about getting your development environment set up and how to run the server locally\n\n\nRequirements\n\n\n\n\nPython 3\n\n\ngit\n\n\n\n\nIf using a windows machine, you'll want to make sure that your PATH environment variable is set up so you can run these tools from the command line.\n\n\nOptional\n: The creator of this documentation uses \nCMDER\n which is a console emulation tool allowing unix style commands in windows, and comes prepackaged with a git install.\n\n\nCloning the project\n\n\nFrom the command line, navigate to the directory you want to clone the project.\n\n\ngit clone https://github.com/potholerichardsonapp/MapServer.git\n\n\n\nVirtual Environment\n\n\nPython virtual environments, managed by venv, are set up for installing packages and running programs in a way that isolates them from other packages installed on the rest of the system. \n\n\nBecause this server requires several external python packages, it's recommended to use a venv to manage them and to make collaboration easier.\n\n\nIf you don't already have venv installed\n\n\npip install virtualenv\n\n\n\nOnce installed, you can create a new virtual environment in the directory of your choice with:\n\n\nvirtualenv ENVName\n\n\n\nOn windows, to activate the virtual environment you can use:\n\n\n/path/to/env/Scripts/activate\n\n\n\nWhen activated, your command line will appear like:\n\n\n(ENVName)$\n\n\n\nInstalling required python packages\n\n\nIf you're using your virtual environment, make sure that's activated.\n\n\nIn the cloned project directory, you'll notice a file called 'requirements.txt'. This is a generated file from pip showing all currently installed packages in your venv.\n\n\nYou can batch install these packages using\n\n\n(ENVName)$ pip install -r path/to/requirements.txt\n\n\n\nInitial database migrations\n\n\nThe first time you run the server, you may need to make some database migrations to construct the database schema.\n\n\nFrom the project directory you can run:\n\n\n(ENVName)$ python manage.py migrate\n(ENVName)$ python manage.py makemigrations\n\n\n\nRunning the server\n\n\nFrom the project directory containing manage.py\n\n\n(ENVName)$ python manage.py runserver\n\n\n\nYour server should now be running and you'll be able to access it at \nlocalhost:8000",
+            "title": "Getting Started"
+        },
+        {
+            "location": "/gettingstarted/#getting-started",
+            "text": "On this page, we'll talk about getting your development environment set up and how to run the server locally",
+            "title": "Getting Started"
+        },
+        {
+            "location": "/gettingstarted/#requirements",
+            "text": "Python 3  git   If using a windows machine, you'll want to make sure that your PATH environment variable is set up so you can run these tools from the command line.  Optional : The creator of this documentation uses  CMDER  which is a console emulation tool allowing unix style commands in windows, and comes prepackaged with a git install.",
+            "title": "Requirements"
+        },
+        {
+            "location": "/gettingstarted/#cloning-the-project",
+            "text": "From the command line, navigate to the directory you want to clone the project.  git clone https://github.com/potholerichardsonapp/MapServer.git",
+            "title": "Cloning the project"
+        },
+        {
+            "location": "/gettingstarted/#virtual-environment",
+            "text": "Python virtual environments, managed by venv, are set up for installing packages and running programs in a way that isolates them from other packages installed on the rest of the system.   Because this server requires several external python packages, it's recommended to use a venv to manage them and to make collaboration easier.  If you don't already have venv installed  pip install virtualenv  Once installed, you can create a new virtual environment in the directory of your choice with:  virtualenv ENVName  On windows, to activate the virtual environment you can use:  /path/to/env/Scripts/activate  When activated, your command line will appear like:  (ENVName)$",
+            "title": "Virtual Environment"
+        },
+        {
+            "location": "/gettingstarted/#installing-required-python-packages",
+            "text": "If you're using your virtual environment, make sure that's activated.  In the cloned project directory, you'll notice a file called 'requirements.txt'. This is a generated file from pip showing all currently installed packages in your venv.  You can batch install these packages using  (ENVName)$ pip install -r path/to/requirements.txt",
+            "title": "Installing required python packages"
+        },
+        {
+            "location": "/gettingstarted/#initial-database-migrations",
+            "text": "The first time you run the server, you may need to make some database migrations to construct the database schema.  From the project directory you can run:  (ENVName)$ python manage.py migrate\n(ENVName)$ python manage.py makemigrations",
+            "title": "Initial database migrations"
+        },
+        {
+            "location": "/gettingstarted/#running-the-server",
+            "text": "From the project directory containing manage.py  (ENVName)$ python manage.py runserver  Your server should now be running and you'll be able to access it at  localhost:8000",
+            "title": "Running the server"
+        },
+        {
+            "location": "/ProjectLayout/",
+            "text": "Project Layout\n\n\nBefore reading this section, it's recommended to read the \ngetting started tutorials\n for Django and to review the \nDjango documentation\n\n\nDirectory Structure\n\n\ndb.sqlite3\nmanage.py \nProcfile \nrequirements.txt \nruntime.txt \nmapserver/ \n    templates/ \n        search.html \n    admin.py\n    apps.py\n    filters.py\n    forms.py\n    local_settings.py\n    models.py\n    tests.py\n    urls.py\n    views.py\nmapserverproj/\n    urls.py\n    settings.py\n    wsgi.py\n    ...\n\n\n\nMain directory\n\n\nIn the main directory you'll find a few files related to Heroku deployment:\n\n\nProcfile\nrequirements.txt\nruntime.txt\n\n\n\nYour local copy of the database:\n\n\ndb.sqlite3\n\n\n\nAnd your manage.py script which will be used to launch the server and run other commands like migrations\n\n\nmapserverproj/\n\n\nThis is the parent project for your mapserver app. Very little logic for the mapserver app itself is stored here with some exceptions.\n\n\nurls.py\n\n\nThis is the initial controller logic for the webserver. When a client connects to the server, this file is the first location the server will look to try to find a URL match.\n\n\nExcept for the admin panel, by default all requests will be routed to the urls.py located under the mapserver/ folder\n\n\nurlpatterns = [\n    path('admin/', admin.site.urls),\n    path('',include('mapserver.urls')) #Send all other requests to mapserver.urls file\n]\n\n\n\nsettings.py\n\n\nYour server settings are stored here. It's recommended to check out the Django documentation for specifics.\n\n\nwsgi.py\n\n\nThis file is used for deployment.\n\n\nmapserver/\n\n\nMost of the app specific code is stored here. Things to note:\n\n\nadmin.py\n \n\n\nRegisters your models to be displayed in the admin panel, and where admin logic can be placed.\n\n\nforms.py\n    \n\n\nStores the templates for your forms (like the filter used on the homepage) and their logic.\n\n\nmodels.py\n \n\n\nStores the information for your db models, such as the DataReport model used to store event information\n\n\nurls.py\n\n\nBy default, from the parent mapserver/urls.py, all url requests are passed here.\n\n\nviews.py\n\n\nYour server views. Your urls.py will route a request to render one of these views. This is where most of the server logic is currently located.",
+            "title": "Project Layout"
+        },
+        {
+            "location": "/ProjectLayout/#project-layout",
+            "text": "Before reading this section, it's recommended to read the  getting started tutorials  for Django and to review the  Django documentation",
+            "title": "Project Layout"
+        },
+        {
+            "location": "/ProjectLayout/#directory-structure",
+            "text": "db.sqlite3\nmanage.py \nProcfile \nrequirements.txt \nruntime.txt \nmapserver/ \n    templates/ \n        search.html \n    admin.py\n    apps.py\n    filters.py\n    forms.py\n    local_settings.py\n    models.py\n    tests.py\n    urls.py\n    views.py\nmapserverproj/\n    urls.py\n    settings.py\n    wsgi.py\n    ...",
+            "title": "Directory Structure"
+        },
+        {
+            "location": "/ProjectLayout/#main-directory",
+            "text": "In the main directory you'll find a few files related to Heroku deployment:  Procfile\nrequirements.txt\nruntime.txt  Your local copy of the database:  db.sqlite3  And your manage.py script which will be used to launch the server and run other commands like migrations",
+            "title": "Main directory"
+        },
+        {
+            "location": "/ProjectLayout/#mapserverproj",
+            "text": "This is the parent project for your mapserver app. Very little logic for the mapserver app itself is stored here with some exceptions.  urls.py  This is the initial controller logic for the webserver. When a client connects to the server, this file is the first location the server will look to try to find a URL match.  Except for the admin panel, by default all requests will be routed to the urls.py located under the mapserver/ folder  urlpatterns = [\n    path('admin/', admin.site.urls),\n    path('',include('mapserver.urls')) #Send all other requests to mapserver.urls file\n]  settings.py  Your server settings are stored here. It's recommended to check out the Django documentation for specifics.  wsgi.py  This file is used for deployment.",
+            "title": "mapserverproj/"
+        },
+        {
+            "location": "/ProjectLayout/#mapserver",
+            "text": "Most of the app specific code is stored here. Things to note:  admin.py    Registers your models to be displayed in the admin panel, and where admin logic can be placed.  forms.py       Stores the templates for your forms (like the filter used on the homepage) and their logic.  models.py    Stores the information for your db models, such as the DataReport model used to store event information  urls.py  By default, from the parent mapserver/urls.py, all url requests are passed here.  views.py  Your server views. Your urls.py will route a request to render one of these views. This is where most of the server logic is currently located.",
+            "title": "mapserver/"
+        },
+        {
+            "location": "/serveroperation/",
+            "text": "The lifecycle of a user\n\n\nInitial navigation\n\n\nWhen a user navigates to your website, the Django webserver will first look at it's mapserverproj/urls.py to see if the page the user is attempting to reach has a corresponding view to render.\n\n\nIn our project, any non /admin pages will redirect it's search to the mapserver/urls.py.\n\n\nmapserver/urls.py\n\nurlpatterns = [\npath('', views.search_form, name='search_form'),\n]\n\n\n\nHere, for a blank match. The server will call the search_form view located in mapserver/views.py\n\n\nThe matching view\n\n\nIn views.py, search_form is where most of the logic for the server currently exists. When search_form is called, the browser \nrequest\n is passed to the view containing it's type (GET, POST, etc.) and any associated data.\n\n\nThe search_form itself reacts depending on the request being passed in.\n\n\nIf the request is a GET (indicating that the user is visiting this page without submitting the search form):\n\n\nGet the search form from forms.py\nSet the returning data object to empty\nSync the firebase database (Note, if the unsynced data is large, it may appear the page has stalled while this loads)\nrender the search.html template, passing our data object\n\n\n\nIf the request is a POST (indicating a form submission):\n\n\nCollect the submitted form data from the users request\nCheck to see that the form validation was successful\nParse the form data\nPerform a query on our local database\nParse the returned results to our data object\nrender the search.html template, passing our data object\n\n\n\nYou can check the code to see the specifics of how these are performed.\n\n\nThe form\n\n\nYou probably noticed during the view logic that we rendered a searh form. \n\n\nThis can be found in the forms.py file.\n\n\nclass SearchForm(forms.Form):\n\n    choices = []\n    user_choices = DataReport.objects.values('generator').distinct()\n\n    choices.append((\"All\", \"All\"))\n    for x in user_choices:\n        choices.append( (x['generator'],x['generator']) )\n\n    threshold = forms.DecimalField(label='z-axis thresholds', required=False)\n    date_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))\n    users = forms.CharField(label='User', widget=forms.Select(choices=choices), required=False)\n\n    #This initializer is required to update users field on each form load, not just when server is started\n    #If you have a dynamic field, be sure to add logic here.\n    def __init__(self, *args, **kwargs):\n        super(SearchForm, self).__init__(*args, **kwargs)\n        choices = []\n        user_choices = DataReport.objects.values('generator').distinct()\n\n        choices.append((\"All\", \"All\"))\n        for x in user_choices:\n            choices.append((x['generator'], x['generator']))\n\n        self.fields['users'] = forms.ChoiceField(\n            choices=choices)\n\n\n\nThe form class defines what fields you want to display on the form, their validators (if any), and any other logic that needs to be performed.\n\n\nIn it's current state, we have three fields which are used to query our data, but more can be added:\n\n\nthreshold = forms.DecimalField(label='z-axis thresholds', required=False)\ndate_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))\nusers = forms.CharField(label='User', widget=forms.Select(choices=choices), required=False)\n\n\n\nThe users field loads all the distinct \"generators\" from the database and displays them. For dynamic fields like these, by default they're only loaded once when the server loads. We have overridden this behavior in the initializer for the form object.\n\n\nIf you add more dynamic fields, you must do the same if you want it to load everytime the form is called.\n\n\nThe template\n\n\nWhen you render a page from the view, you are calling a template from the mapserver/templates folder, and usually passing some data into it like the form objects to render and any data object that needs to be exposed to the front end logic.",
+            "title": "How it works"
+        },
+        {
+            "location": "/serveroperation/#the-lifecycle-of-a-user",
+            "text": "",
+            "title": "The lifecycle of a user"
+        },
+        {
+            "location": "/serveroperation/#initial-navigation",
+            "text": "When a user navigates to your website, the Django webserver will first look at it's mapserverproj/urls.py to see if the page the user is attempting to reach has a corresponding view to render.  In our project, any non /admin pages will redirect it's search to the mapserver/urls.py.  mapserver/urls.py\n\nurlpatterns = [\npath('', views.search_form, name='search_form'),\n]  Here, for a blank match. The server will call the search_form view located in mapserver/views.py",
+            "title": "Initial navigation"
+        },
+        {
+            "location": "/serveroperation/#the-matching-view",
+            "text": "In views.py, search_form is where most of the logic for the server currently exists. When search_form is called, the browser  request  is passed to the view containing it's type (GET, POST, etc.) and any associated data.  The search_form itself reacts depending on the request being passed in.  If the request is a GET (indicating that the user is visiting this page without submitting the search form):  Get the search form from forms.py\nSet the returning data object to empty\nSync the firebase database (Note, if the unsynced data is large, it may appear the page has stalled while this loads)\nrender the search.html template, passing our data object  If the request is a POST (indicating a form submission):  Collect the submitted form data from the users request\nCheck to see that the form validation was successful\nParse the form data\nPerform a query on our local database\nParse the returned results to our data object\nrender the search.html template, passing our data object  You can check the code to see the specifics of how these are performed.",
+            "title": "The matching view"
+        },
+        {
+            "location": "/serveroperation/#the-form",
+            "text": "You probably noticed during the view logic that we rendered a searh form.   This can be found in the forms.py file.  class SearchForm(forms.Form):\n\n    choices = []\n    user_choices = DataReport.objects.values('generator').distinct()\n\n    choices.append((\"All\", \"All\"))\n    for x in user_choices:\n        choices.append( (x['generator'],x['generator']) )\n\n    threshold = forms.DecimalField(label='z-axis thresholds', required=False)\n    date_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))\n    users = forms.CharField(label='User', widget=forms.Select(choices=choices), required=False)\n\n    #This initializer is required to update users field on each form load, not just when server is started\n    #If you have a dynamic field, be sure to add logic here.\n    def __init__(self, *args, **kwargs):\n        super(SearchForm, self).__init__(*args, **kwargs)\n        choices = []\n        user_choices = DataReport.objects.values('generator').distinct()\n\n        choices.append((\"All\", \"All\"))\n        for x in user_choices:\n            choices.append((x['generator'], x['generator']))\n\n        self.fields['users'] = forms.ChoiceField(\n            choices=choices)  The form class defines what fields you want to display on the form, their validators (if any), and any other logic that needs to be performed.  In it's current state, we have three fields which are used to query our data, but more can be added:  threshold = forms.DecimalField(label='z-axis thresholds', required=False)\ndate_time = forms.DateTimeField(label='Date', required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/DD/YYYY'}))\nusers = forms.CharField(label='User', widget=forms.Select(choices=choices), required=False)  The users field loads all the distinct \"generators\" from the database and displays them. For dynamic fields like these, by default they're only loaded once when the server loads. We have overridden this behavior in the initializer for the form object.  If you add more dynamic fields, you must do the same if you want it to load everytime the form is called.",
+            "title": "The form"
+        },
+        {
+            "location": "/serveroperation/#the-template",
+            "text": "When you render a page from the view, you are calling a template from the mapserver/templates folder, and usually passing some data into it like the form objects to render and any data object that needs to be exposed to the front end logic.",
+            "title": "The template"
+        },
+        {
+            "location": "/deployment/",
+            "text": "Deploying the server\n\n\nBy default, we have set up the project so that it can be easily deployed to Heroku for testing and basic hosting.\n\n\nPlease review the \nDeploying Django to Heroku\n for limitations and a basic overview.\n\n\nYou can follow the steps given \nhere to create a project and deploy\n\n\nPlease note that we have already set the project up for deployment, including creating the needed Procfile, creating the requirements.txt, setting up local settings, etc.",
+            "title": "Deploying the server"
+        },
+        {
+            "location": "/deployment/#deploying-the-server",
+            "text": "By default, we have set up the project so that it can be easily deployed to Heroku for testing and basic hosting.  Please review the  Deploying Django to Heroku  for limitations and a basic overview.  You can follow the steps given  here to create a project and deploy  Please note that we have already set the project up for deployment, including creating the needed Procfile, creating the requirements.txt, setting up local settings, etc.",
+            "title": "Deploying the server"
+        }
+    ]
+}

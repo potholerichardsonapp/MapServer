@@ -87,4 +87,9 @@ If you add more dynamic fields, you must do the same if you want it to load ever
 
 When you render a page from the view, you are calling a template from the mapserver/templates folder, and usually passing some data into it like the form objects to render and any data object that needs to be exposed to the front end logic.
 
+------
+
+# Front End
+
+'Test Code'
 

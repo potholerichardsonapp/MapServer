@@ -5,7 +5,7 @@
 When a user navigates to your website, the Django webserver will first look at it's mapserverproj/urls.py to see if the page the user is attempting to reach has a corresponding view to render.
 
 In our project, any non /admin pages will redirect it's search to the mapserver/urls.py.
-
+	
 	mapserver/urls.py
 	
 	urlpatterns = [
@@ -91,7 +91,98 @@ When you render a page from the view, you are calling a template from the mapser
 
 # Front End
 
-`Test Code`
-`Test Code`
-`Test Code`
+All backend data is returned in a single object to be unpacked later:
+	var data = {{data | safe}};
 
+The Google Maps API is used: https://developers.google.com/maps/documentation/javascript/reference/3.exp/
+
+Make sure that API source and key is valid and correct:
+
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?	libraries=visualization&language=fra&amp;sensor=false"></script>
+
+Map and streetview are implemented as 2 different divs, in order to make CSS changes more maneagable. To edit the visuals, just find the id tag in the CSS section of `search.html`. 
+
+# Json Unpacking
+Each location is saved in an 2D array, using the key value pair structure of a JSON object. Access as nodes[Node][Attribute]:
+
+      var nodes = data.map(function (object) {
+        return [object["lat"], object["long"], object["accel"], object["generator"], object["date_time"]]
+      });
+ 
+In this specfic case, [node][1] - Lat, [node][2] -lng, [node][3] acceleration, etc..
+To update the key value pairs, simply replace all the keys in the quotes to match with the keys given by the backend.
+**Note**: An understanding of the Javascript `map` function is pivotal to understand how it update in the future
+    
+   
+# Google Markers
+All node attributes (Streetview, Infobox, etc..) are implemented in the one single loop. Each node will be a marker, with location attributes being its only values.
+Each node is saved into Google Maps Marker data types, and pointed/added at the local `map` object in the specific instance:
+
+        var marker = new google.maps.Marker({
+          position: position,
+          map: map,
+        });
+	
+# Info Box
+An info box is implemented with an event listener on the the marker created for that specfic location. The infobox acts as a means of adding more attributes to that marker. Specifcally, `setContent` adds more values to it. To edit whats in the info box, simply do a string concantantion on what you want it to say. **HTML can be added, and viewed as such**. 
+
+            infowindow.setContent('<h3><strong>' + nodes[i][4] + '</strong></h3>' +
+              '<p>' + 'lat: ' + nodes[i][0] + ', long: ' + nodes[i][1] + '</p>' +
+              '<p>' + 'accel: ' + nodes[i][2] + '</p>' +
+              '<p>' + 'generator: ' + nodes[i][3] + '</p>'
+            );
+	    
+# Streetview	    
+Streetview nodes are added the street view object, all location data populated by the 2D array. The location attribute needs to be filled with valide locations, and a radius value (how far from the initial location to find alternate view) in the case that it is not valid
+
+            sv.getPanorama({
+              location: {
+                lat: Number(nodes[i][0]),
+                lng: Number(nodes[i][1])
+              },
+              radius: 50
+            }, processSVData);
+	    
+If you would like to customize how the Streetview looks on load, edit the following the function from the callback:
+
+    function processSVData(data, status) {
+      if (status === 'OK') {
+
+        panorama.setPano(data.location.pano);
+        panorama.setPov({
+          heading: 270,
+          pitch: 0
+        });
+
+        panorama.setVisible(true);
+
+      } else {
+        console.error('Street View data not found for this location.');
+      }
+    }
+
+
+# Map Autozoom
+The autozoom feature (where the map will zoom out in order to get as many markers in view) is then implmented by adding bounds, using the latitude and longitiude (latlng) populated by the 2D array. The `fitBounds` function simply needs at latitude and longitude to add the bounding attribute to the local map instance.
+
+      var latlngbounds = new google.maps.LatLngBounds();
+      for (var i = 0; i < latlng.length; i++) {
+        latlngbounds.extend(latlng[i]);
+      }
+      map.fitBounds(latlngbounds);
+      
+     
+# Heatmap
+The locations are then added to the Heatmap object using Javascripts `map` function. `object` is the current iteration of node in the 2D, as this is how `map` goes through iterable object. `map` returns an array specfied by what is returned. The heatmap `data` key only needs an arrau of LatLng objects (created by the `LatLng` function).
+
+      heatmap = new google.maps.visualization.HeatmapLayer({
+        data:  nodes.map(function(object){return new google.maps.LatLng(object[0], object[1])}),
+        map: map
+      });
+
+# Floating Bar
+To add functionality floating bar, just add a button tag with an accomping `onclick` function to give it more functionality
+Ex.
+ 	<div id="floating-panel">
+  	<button onclick="toggleHeatmap()">Toggle Heatmap</button>
+To edit the size and looks of the bar, find the id in the CSS section to update it.

@@ -82,6 +82,30 @@
     <li class="toctree-l2"><a href="#the-template">The template</a></li>
     
 
+    <li class="toctree-l2"><a href="#front-end">Front End</a></li>
+    
+
+    <li class="toctree-l2"><a href="#json-unpacking">Json Unpacking</a></li>
+    
+
+    <li class="toctree-l2"><a href="#google-markers">Google Markers</a></li>
+    
+
+    <li class="toctree-l2"><a href="#info-box">Info Box</a></li>
+    
+
+    <li class="toctree-l2"><a href="#streetview">Streetview</a></li>
+    
+
+    <li class="toctree-l2"><a href="#map-autozoom">Map Autozoom</a></li>
+    
+
+    <li class="toctree-l2"><a href="#heatmap">Heatmap</a></li>
+    
+
+    <li class="toctree-l2"><a href="#floating-bar">Floating Bar</a></li>
+    
+
     </ul>
 	    </li>
           
@@ -191,6 +215,88 @@ users = forms.CharField(label='User', widget=forms.Select(choices=choices), requ
 <p>If you add more dynamic fields, you must do the same if you want it to load everytime the form is called.</p>
 <h1 id="the-template">The template</h1>
 <p>When you render a page from the view, you are calling a template from the mapserver/templates folder, and usually passing some data into it like the form objects to render and any data object that needs to be exposed to the front end logic.</p>
+<hr />
+<h1 id="front-end">Front End</h1>
+<p>All backend data is returned in a single object to be unpacked later:
+    var data = {{data | safe}};</p>
+<p>The Google Maps API is used: https://developers.google.com/maps/documentation/javascript/reference/3.exp/</p>
+<p>Make sure that API source and key is valid and correct:</p>
+<pre><code>&lt;script type="text/javascript" src="http://maps.googleapis.com/maps/api/js? libraries=visualization&amp;language=fra&amp;amp;sensor=false"&gt;&lt;/script&gt;
+</code></pre>
+<p>Map and streetview are implemented as 2 different divs, in order to make CSS changes more maneagable. To edit the visuals, just find the id tag in the CSS section of <code>search.html</code>. </p>
+<h1 id="json-unpacking">Json Unpacking</h1>
+<p>Each location is saved in an 2D array, using the key value pair structure of a JSON object. Access as nodes[Node][Attribute]:</p>
+<pre><code>  var nodes = data.map(function (object) {
+    return [object["lat"], object["long"], object["accel"], object["generator"], object["date_time"]]
+  });
+</code></pre>
+<p>In this specfic case, [node][1] - Lat, [node][2] -lng, [node][3] acceleration, etc..
+To update the key value pairs, simply replace all the keys in the quotes to match with the keys given by the backend.
+<strong>Note</strong>: An understanding of the Javascript <code>map</code> function is pivotal to understand how it update in the future</p>
+<h1 id="google-markers">Google Markers</h1>
+<p>All node attributes (Streetview, Infobox, etc..) are implemented in the one single loop. Each node will be a marker, with location attributes being its only values.
+Each node is saved into Google Maps Marker data types, and pointed/added at the local <code>map</code> object in the specific instance:</p>
+<pre><code>    var marker = new google.maps.Marker({
+      position: position,
+      map: map,
+    });
+</code></pre>
+<h1 id="info-box">Info Box</h1>
+<p>An info box is implemented with an event listener on the the marker created for that specfic location. The infobox acts as a means of adding more attributes to that marker. Specifcally, <code>setContent</code> adds more values to it. To edit whats in the info box, simply do a string concantantion on what you want it to say. <strong>HTML can be added, and viewed as such</strong>. </p>
+<pre><code>        infowindow.setContent('&lt;h3&gt;&lt;strong&gt;' + nodes[i][4] + '&lt;/strong&gt;&lt;/h3&gt;' +
+          '&lt;p&gt;' + 'lat: ' + nodes[i][0] + ', long: ' + nodes[i][1] + '&lt;/p&gt;' +
+          '&lt;p&gt;' + 'accel: ' + nodes[i][2] + '&lt;/p&gt;' +
+          '&lt;p&gt;' + 'generator: ' + nodes[i][3] + '&lt;/p&gt;'
+        );
+</code></pre>
+<h1 id="streetview">Streetview</h1>
+<p>Streetview nodes are added the street view object, all location data populated by the 2D array. The location attribute needs to be filled with valide locations, and a radius value (how far from the initial location to find alternate view) in the case that it is not valid</p>
+<pre><code>        sv.getPanorama({
+          location: {
+            lat: Number(nodes[i][0]),
+            lng: Number(nodes[i][1])
+          },
+          radius: 50
+        }, processSVData);
+</code></pre>
+<p>If you would like to customize how the Streetview looks on load, edit the following the function from the callback:</p>
+<pre><code>function processSVData(data, status) {
+  if (status === 'OK') {
+
+    panorama.setPano(data.location.pano);
+    panorama.setPov({
+      heading: 270,
+      pitch: 0
+    });
+
+    panorama.setVisible(true);
+
+  } else {
+    console.error('Street View data not found for this location.');
+  }
+}
+</code></pre>
+<h1 id="map-autozoom">Map Autozoom</h1>
+<p>The autozoom feature (where the map will zoom out in order to get as many markers in view) is then implmented by adding bounds, using the latitude and longitiude (latlng) populated by the 2D array. The <code>fitBounds</code> function simply needs at latitude and longitude to add the bounding attribute to the local map instance.</p>
+<pre><code>  var latlngbounds = new google.maps.LatLngBounds();
+  for (var i = 0; i &lt; latlng.length; i++) {
+    latlngbounds.extend(latlng[i]);
+  }
+  map.fitBounds(latlngbounds);
+</code></pre>
+<h1 id="heatmap">Heatmap</h1>
+<p>The locations are then added to the Heatmap object using Javascripts <code>map</code> function. <code>object</code> is the current iteration of node in the 2D, as this is how <code>map</code> goes through iterable object. <code>map</code> returns an array specfied by what is returned. The heatmap <code>data</code> key only needs an arrau of LatLng objects (created by the <code>LatLng</code> function).</p>
+<pre><code>  heatmap = new google.maps.visualization.HeatmapLayer({
+    data:  nodes.map(function(object){return new google.maps.LatLng(object[0], object[1])}),
+    map: map
+  });
+</code></pre>
+<h1 id="floating-bar">Floating Bar</h1>
+<p>To add functionality floating bar, just add a button tag with an accomping <code>onclick</code> function to give it more functionality
+Ex.
+    <div id="floating-panel">
+    <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+To edit the size and looks of the bar, find the id in the CSS section to update it.</p>
               
             </div>
           </div>

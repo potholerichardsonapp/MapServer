@@ -6,11 +6,5 @@ If you're reading this documentation, you're likely working on the webserver por
 
 The MapServer is a Django webserver that synchronizes with the Firebase DB that stores your recorded events and overlays the information on a google maps frontend.
 
-In this documentation, we'll discuss setting up your development environment, the project layout, and how to make some simple changes to the project.
+In this documentation, we'll discuss setting up your development environment, the project layout, and the lifecycle of a user.
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
